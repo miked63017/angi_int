@@ -23,8 +23,13 @@ docker push miked63017/angi-hello:latest
 cd ../helm
 helm install angi-hello angi-hello
 
+# Add annotations to svc, not sure why LB stays in pending if they are present in helm charts
+# annotations:
+kubectl annotate svc angi-hello service.beta.kubernetes.io/aws-load-balancer-type="external"
+# wait for LB public IP
+
 # get url for hello world app
-export hello_url=`k get service angi-hello -o "jsonpath={.status.loadBalancer.ingress[0].hostname}"`
+export hello_url=`kubectl get service angi-hello -o "jsonpath={.status.loadBalancer.ingress[0].hostname}"`
 curl $hello_url
 <p>Hello, World!</p
 
